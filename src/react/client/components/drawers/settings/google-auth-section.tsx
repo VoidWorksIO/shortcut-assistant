@@ -43,7 +43,13 @@ function GoogleAuthSection({ onAuthStatusChange }: GoogleAuthSectionProps): Reac
         updateAuthStatus('authenticated')
       }
       else {
-        updateAuthStatus('error', response.data.error)
+        // Handle both React and legacy response formats
+        const errorMessage = 'error' in response
+          ? response.error
+          : 'message' in response
+            ? response.message
+            : 'Unknown error occurred'
+        updateAuthStatus('error', errorMessage)
       }
     }
     catch (error) {
@@ -63,7 +69,7 @@ function GoogleAuthSection({ onAuthStatusChange }: GoogleAuthSectionProps): Reac
 
   return (
     <div className="space-y-4">
-      <h3 className="font-medium text-sm">Step 1: Authenticate with Google</h3>
+      <h3 className="font-medium text-sm text-foreground">Step 1: Authenticate with Google</h3>
       <Button
         onClick={handleGoogleAuth}
         disabled={authStatus === 'loading' || authStatus === 'authenticated'}
@@ -74,8 +80,8 @@ function GoogleAuthSection({ onAuthStatusChange }: GoogleAuthSectionProps): Reac
       >
         {buttonText}
       </Button>
-      <p className="text-gray-400 text-xs">
-        We need to verify your Google account before enabling advanced features.
+      <p className="text-muted-foreground text-xs">
+        We need to verify your Google account before enabling advanced features. This may require logging in on Chrome.
       </p>
     </div>
   )

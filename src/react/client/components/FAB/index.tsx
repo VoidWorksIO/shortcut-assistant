@@ -1,15 +1,22 @@
 import { Settings } from 'lucide-react'
 import React, { useState } from 'react'
+import { toast } from 'sonner'
 
 import '@/styles/globals.css'
 import './styles.css'
 import { Drawers } from '@/client/components/drawers'
+import { ShortcutAssistantModal } from '@/client/components/shortcut-assistant-modal'
+import { checkAuthentication } from '@/client/lib/auth-check'
 import { DrawerType } from '@/client/types/drawer'
+import { Toaster } from '@/components/ui/sonner'
 
+
+type ModalType = 'analyze' | 'breakdown' | null
 
 function FAB(): React.ReactElement {
   const [isOpen, setIsOpen] = useState(false)
   const [openDrawer, setOpenDrawer] = useState<DrawerType | null>(null)
+  const [openModal, setOpenModal] = useState<ModalType>(null)
 
   function handleToggle(): void {
     setIsOpen(!isOpen)
@@ -24,8 +31,56 @@ function FAB(): React.ReactElement {
     setOpenDrawer(drawer)
   }
 
+  async function handleOpenAnalyze(): Promise<void> {
+    const authStatus = await checkAuthentication()
+    if (!authStatus.isAuthenticated) {
+      toast.info('Please authenticate in Settings to use AI features')
+      setOpenDrawer('settings')
+      setIsOpen(false)
+      return
+    }
+    setOpenModal('analyze')
+    setIsOpen(false)
+  }
+
+  async function handleOpenBreakdown(): Promise<void> {
+    const authStatus = await checkAuthentication()
+    if (!authStatus.isAuthenticated) {
+      toast.info('Please authenticate in Settings to use AI features')
+      setOpenDrawer('settings')
+      setIsOpen(false)
+      return
+    }
+    setOpenModal('breakdown')
+    setIsOpen(false)
+  }
+
+  async function handleAddLabels(): Promise<void> {
+    const authStatus = await checkAuthentication()
+    if (!authStatus.isAuthenticated) {
+      toast.info('Please authenticate in Settings to use AI features')
+      setOpenDrawer('settings')
+      setIsOpen(false)
+      return
+    }
+    setIsOpen(false)
+    try {
+      await chrome.runtime.sendMessage({ action: 'addLabels' })
+    }
+    catch (error) {
+      console.error('Error adding labels:', error)
+    }
+  }
+
+  function handleModalChange(open: boolean): void {
+    if (!open) {
+      setOpenModal(null)
+    }
+  }
+
   return (
     <>
+      <Toaster />
       <div className="shortcut-assistant-fab">
         <button
           className={`shortcut-assistant-fab-button ${isOpen ? 'open' : ''}`}
@@ -41,9 +96,24 @@ function FAB(): React.ReactElement {
 
         {isOpen && (
           <div className="shortcut-assistant-fab-menu">
-            <button className="shortcut-assistant-fab-menu-item">Analyze</button>
-            <button className="shortcut-assistant-fab-menu-item">Break Up</button>
-            <button className="shortcut-assistant-fab-menu-item">Add Labels</button>
+            <button
+              className="shortcut-assistant-fab-menu-item"
+              onClick={handleOpenAnalyze}
+            >
+              Analyze
+            </button>
+            <button
+              className="shortcut-assistant-fab-menu-item"
+              onClick={handleOpenBreakdown}
+            >
+              Break Down
+            </button>
+            <button
+              className="shortcut-assistant-fab-menu-item"
+              onClick={handleAddLabels}
+            >
+              Add Labels
+            </button>
             <button
               className="shortcut-assistant-fab-menu-item"
               onClick={handleOpenSettings}
@@ -61,6 +131,13 @@ function FAB(): React.ReactElement {
         openDrawer={openDrawer}
         onOpenChange={handleDrawerChange}
       />
+      {openModal && (
+        <ShortcutAssistantModal
+          open={true}
+          onOpenChange={handleModalChange}
+          initialView={openModal}
+        />
+      )}
     </>
   )
 }
