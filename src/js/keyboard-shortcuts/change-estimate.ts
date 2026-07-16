@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/require-await
 async function changeEstimate(): Promise<void> {
   chrome.runtime.sendMessage({ action: 'sendEvent', data: { eventName: 'change_estimate' } })
-  const dropdown: HTMLElement | null = document.querySelector('.estimate-content')
+  const dropdown: HTMLElement | null = document.querySelector('.story-points')
   if (!dropdown) {
     console.error('The estimate dropdown was not found.')
     return
@@ -21,20 +21,21 @@ async function setEstimate(event: KeyboardEvent): Promise<void> {
   if (!key.match(/^\d+$/)) {
     return
   }
-  const estimatesDropdown: HTMLDivElement | null = document.querySelector('.apply-on-click')
-  if (!estimatesDropdown) {
+  const estimatesList: HTMLUListElement | null = document.querySelector('.react-multiselect-list')
+  if (!estimatesList) {
     console.error('The estimates dropdown was not found.')
     return
   }
-  const estimates: NodeListOf<HTMLDivElement> = estimatesDropdown.querySelectorAll('.focusable')
-  estimates.forEach((div) => {
-    if (div.innerText.includes(`${key} points`)) {
-      div.click()
-    }
-    else {
-      console.error('The estimate was not found.')
-    }
+  const options: NodeListOf<HTMLLIElement> = estimatesList.querySelectorAll('li[role="option"]')
+  const matchingOption = Array.from(options).find((option) => {
+    const optionText = option.innerText.replace(/ /g, ' ').trim()
+    return optionText === `${key} Points`
   })
+  if (!matchingOption) {
+    console.error('The estimate was not found.')
+    return
+  }
+  matchingOption.click()
 }
 
 export default changeEstimate
