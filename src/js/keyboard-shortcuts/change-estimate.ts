@@ -28,7 +28,7 @@ async function setEstimate(event: KeyboardEvent): Promise<void> {
   }
   const options: NodeListOf<HTMLLIElement> = estimatesList.querySelectorAll('li[role="option"]')
   const matchingOption = Array.from(options).find((option) => {
-    const optionText = option.innerText.replace(/ /g, ' ').trim()
+    const optionText = option.innerText.replace(/\u00A0/g, ' ').trim()
     return optionText === `${key} Points`
   })
   if (!matchingOption) {
