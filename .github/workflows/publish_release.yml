@@ -37,15 +37,18 @@ jobs:
 
       - name: Update and publish release
         if: steps.pr_info.outputs.pr_title
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
+        env:
+          RELEASE_TAG: ${{ steps.pr_info.outputs.pr_title }}
+          RELEASE_BODY: ${{ steps.pr_info.outputs.pr_body }}
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             const updateAndPublishRelease = require('./.github/scripts/update-and-publish-release.js');
-            await updateAndPublishRelease({ 
-              github, 
-              context, 
-              core, 
-              releaseTag: '${{ steps.pr_info.outputs.pr_title }}',
-              releaseBody: '${{ steps.pr_info.outputs.pr_body }}'
+            await updateAndPublishRelease({
+              github,
+              context,
+              core,
+              releaseTag: process.env.RELEASE_TAG,
+              releaseBody: process.env.RELEASE_BODY
             });
