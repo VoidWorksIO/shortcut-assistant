@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/require-await
 async function changeEstimate(): Promise<void> {
   chrome.runtime.sendMessage({ action: 'sendEvent', data: { eventName: 'change_estimate' } })
-  const dropdown: HTMLElement | null = document.querySelector('#story-dialog-estimate-dropdown')
+  const dropdown: HTMLElement | null = document.querySelector('.estimate-content')
   if (!dropdown) {
     console.error('The estimate dropdown was not found.')
     return
