@@ -66,28 +66,60 @@ describe('set estimate', () => {
   })
 
   it('should click on the estimate if it is found', async () => {
-    const mockDiv = { click: jest.fn(), innerText: '1 points' } as unknown as MockedElement
-    const mockQuerySelector = jest.fn().mockReturnValue([mockDiv])
-    const value = { querySelectorAll: mockQuerySelector } as unknown as Element
+    const mockOption = { click: jest.fn(), innerText: '1 Points' } as unknown as MockedElement
+    const mockQuerySelectorAll = jest.fn().mockReturnValue([mockOption])
+    const value = { querySelectorAll: mockQuerySelectorAll } as unknown as Element
     jest.spyOn(document, 'querySelector').mockReturnValueOnce(value)
 
     const event = { key: '1' } as unknown as KeyboardEvent
 
     await setEstimate(event)
 
-    expect(mockDiv.click).toHaveBeenCalled()
+    expect(mockQuerySelectorAll).toHaveBeenCalledWith('li[role="option"]')
+    expect(mockOption.click).toHaveBeenCalled()
+  })
+
+  it('should match the correct estimate among several options', async () => {
+    const mockOptions = ['0 Points', '1 Points', '2 Points'].map((innerText) => {
+      return { click: jest.fn(), innerText } as unknown as MockedElement
+    })
+    const mockQuerySelectorAll = jest.fn().mockReturnValue(mockOptions)
+    const value = { querySelectorAll: mockQuerySelectorAll } as unknown as Element
+    jest.spyOn(document, 'querySelector').mockReturnValueOnce(value)
+
+    const event = { key: '2' } as unknown as KeyboardEvent
+
+    await setEstimate(event)
+
+    expect(mockOptions[2].click).toHaveBeenCalled()
+    expect(mockOptions[0].click).not.toHaveBeenCalled()
+    expect(mockOptions[1].click).not.toHaveBeenCalled()
+  })
+
+  it('should normalize non-breaking spaces in the option text', async () => {
+    const mockOption = { click: jest.fn(), innerText: '8 Points' } as unknown as MockedElement
+    const mockQuerySelectorAll = jest.fn().mockReturnValue([mockOption])
+    const value = { querySelectorAll: mockQuerySelectorAll } as unknown as Element
+    jest.spyOn(document, 'querySelector').mockReturnValueOnce(value)
+
+    const event = { key: '8' } as unknown as KeyboardEvent
+
+    await setEstimate(event)
+
+    expect(mockOption.click).toHaveBeenCalled()
   })
 
   it('should log an error if the estimate is not found', async () => {
-    const mockDiv = { click: jest.fn(), innerText: '2 points' } as unknown as MockedElement
-    const mockQuerySelector = jest.fn().mockReturnValue([mockDiv])
-    const value = { querySelectorAll: mockQuerySelector } as unknown as Element
+    const mockOption = { click: jest.fn(), innerText: '2 Points' } as unknown as MockedElement
+    const mockQuerySelectorAll = jest.fn().mockReturnValue([mockOption])
+    const value = { querySelectorAll: mockQuerySelectorAll } as unknown as Element
     jest.spyOn(document, 'querySelector').mockReturnValueOnce(value)
 
     const event = { key: '1' } as unknown as KeyboardEvent
 
     await setEstimate(event)
 
+    expect(mockOption.click).not.toHaveBeenCalled()
     expect(console.error).toHaveBeenCalledWith('The estimate was not found.')
   })
 })
