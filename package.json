@@ -32,7 +32,7 @@
     "@tailwindcss/typography": "0.5.16",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
+    "@testing-library/react": "^16.3.2",
     "@types/chrome": "^0.0.290",
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.17.13",
