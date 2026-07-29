@@ -2063,10 +2063,10 @@
     "@types/filesystem" "*"
     "@types/har-format" "*"
 
-"@types/chrome@^0.0.290":
-  version "0.0.290"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.290.tgz#570e511360d1b92cf24773af0c3b23b6e1f13152"
-  integrity sha512-N92vsAdlwoWameDQ8D4K0EZXXvxsJ1+gJg+4TWjUUsZ6gpontVmwl1XVtysA3mso45Fcn5UPiX/yqiT8GcBV3A==
+"@types/chrome@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.2.2.tgz#e4cf14e2f673428fdeb69d3bf2187cacd2136c9b"
+  integrity sha512-8rSMZ4cvo2xmaSyQg0sN5yRL7oiDkntLoiHxUhfwQnv1mvnkrdoZ25SlNrKWmYKaeP50WvrfWj1pmc02+U9KKw==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
